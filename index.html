@@ -89,14 +89,34 @@ function renderCoins(){
   document.getElementById("suggestions").innerHTML=picks.length?picks.map(c=>`<div class="coin"><div><div class="coin-name">${c.name} (${c.symbol.toUpperCase()})</div><div class="coin-sub">Variation 24 h : ${pct(c.price_change_percentage_24h)}</div></div><div style="text-align:right"><span class="pill">À étudier</span><div style="margin-top:8px"><button class="secondary" onclick="buy('${c.id}')">Simuler achat</button></div></div></div>`).join(""):"Aucune monnaie ne correspond actuellement aux règles.";
 }
 async function refresh(){
-  const btn=document.getElementById("refresh");btn.disabled=true;document.getElementById("marketStatus").textContent="Chargement…";
+  const btn=document.getElementById("refresh");
+  btn.disabled=true;
+
   try{
-    const url="https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=volume_desc&per_page=30&page=1&sparkline=false&price_change_percentage=24h";
-    const res=await fetch(url);if(!res.ok)throw new Error("Service temporairement indisponible ("+res.status+")");
-    market=await res.json();renderCoins();document.getElementById("updated").textContent="Mis à jour : "+new Date().toLocaleTimeString("fr-FR");document.getElementById("marketStatus").textContent="Connecté";renderPortfolio();
+    const res=await fetch("https://flat-star-ad08.79g8phrwsb.workers.dev/api/markets");
+    if(!res.ok) throw new Error("Erreur serveur");
+
+    const data=await res.json();
+
+    market=(data.coins||[]).map(c=>({
+      id:c.id,
+      name:c.name,
+      symbol:c.symbol,
+      current_price:c.price,
+      price_change_percentage_24h:c.change_24h,
+      market_cap:c.market_cap,
+      total_volume:c.volume_24h
+    }));
+
+    renderCoins();
     checkExitRules();
-  }catch(e){document.getElementById("marketStatus").textContent="Indisponible";document.getElementById("coins").textContent=e.message+" — réessaie plus tard."}
-  finally{btn.disabled=false}
+
+    document.getElementById("marketStatus").textContent="Connecté";
+  }catch(e){
+    document.getElementById("marketStatus").textContent="Erreur : "+e.message;
+  }finally{
+    btn.disabled=false;
+  }
 }
 function checkExitRules(){
   for(const [id,p] of Object.entries(state.positions)){
