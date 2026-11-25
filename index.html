@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b10">
+  <title>CART3R CRYPTO AI</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{color-scheme:dark;--bg:#090b10;--panel:#121722;--line:#252d3b;--muted:#9aa6b8;--red:#ff425b;--green:#31d49a}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#171d2b,var(--bg) 48%);color:#f5f7fb;font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    header{padding:24px 18px 14px;max-width:900px;margin:auto}h1{font-size:25px;letter-spacing:.08em;margin:0}h1 span{color:var(--red)}.sub{color:var(--muted);margin-top:7px;font-size:13px}
+    main{max-width:900px;margin:auto;padding:8px 14px 36px}.notice{border:1px solid #65404a;background:#26151c;color:#ffdce2;padding:12px;border-radius:13px;font-size:12px;line-height:1.5;margin-bottom:14px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:linear-gradient(145deg,#171e2b,#10151e);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;min-width:0}
+    .metric small,.muted{color:var(--muted)}.metric strong{display:block;font-size:22px;margin-top:6px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 10px;font-weight:700}
+    button{background:var(--red);color:white;border:0;border-radius:11px;padding:11px 14px;font-weight:700;font-size:13px;cursor:pointer}button.secondary{background:#242d3c;color:#eaf0fa;border:1px solid #384457}button:disabled{opacity:.5}
+    input{width:100%;background:#0b1018;border:1px solid #354052;color:white;padding:11px;border-radius:10px;margin-top:6px}
+    label{display:block;color:var(--muted);font-size:12px;margin:10px 0}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .coin{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}.coin:last-child{border:0}.coin-name{font-weight:700}.coin-sub{color:var(--muted);font-size:12px;margin-top:4px}.positive{color:var(--green)}.negative{color:#ff7889}
+    .pill{font-size:10px;border:1px solid #455168;border-radius:99px;padding:4px 7px;color:#cbd5e4}.status{color:var(--green);font-size:11px}.footer{color:var(--muted);font-size:11px;text-align:center;margin-top:20px;line-height:1.5}
+    @media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.layout{display:grid;grid-template-columns:1fr 1fr;gap:12px}.layout .card{height:100%}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>CART3R <span>CRYPTO AI</span></h1>
+  <div class="sub">Assistant d'analyse • alertes à confirmer • simulation uniquement</div>
+</header>
+<main>
+  <div class="notice"><b>Mode éducatif :</b> cette application observe des données publiques et simule les décisions. Elle ne passe aucun ordre réel, ne demande aucune clé de compte et ne prédit pas les cours. Les cryptomonnaies sont très risquées.</div>
+  <div class="grid">
+    <div class="card metric"><small>Solde fictif</small><strong id="cash">1 000,00 €</strong></div>
+    <div class="card metric"><small>Valeur simulée</small><strong id="total">1 000,00 €</strong></div>
+    <div class="card metric"><small>Positions ouvertes</small><strong id="positions">0</strong></div>
+    <div class="card metric"><small>Marché</small><strong id="marketStatus" style="font-size:14px">En attente</strong></div>
+  </div>
+  <div class="section-title"><span>Marché surveillé</span><button id="refresh" class="secondary">Actualiser</button></div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><span class="muted" id="updated">Aucune actualisation</span><span class="pill">Données publiques</span></div>
+    <div id="coins" class="muted" style="padding-top:12px">Appuie sur « Actualiser » pour charger les cours.</div>
+  </div>
+  <div class="layout">
+    <section>
+      <div class="section-title">Mes règles d'analyse</div>
+      <div class="card">
+        <label>Variation minimum sur 24 h (%)<input id="minChange" type="number" step="0.5" value="2"></label>
+        <label>Variation maximum sur 24 h (%)<input id="maxChange" type="number" step="0.5" value="10"></label>
+        <label>Volume minimum observé (€)<input id="minVolume" type="number" step="100000" value="1000000"></label>
+        <label>Objectif de gain simulé (%)<input id="takeProfit" type="number" step="0.5" value="8"></label>
+        <label>Seuil de baisse simulé (%)<input id="stopLoss" type="number" step="0.5" value="5"></label>
+        <button id="saveRules">Enregistrer les règles</button>
+        <span id="rulesSaved" class="muted" style="font-size:11px;margin-left:8px"></span>
+      </div>
+    </section>
+    <section>
+      <div class="section-title">Suggestions à étudier</div>
+      <div class="card"><div id="suggestions" class="muted">Actualise le marché pour obtenir des suggestions fondées sur tes critères.</div></div>
+    </section>
+  </div>
+  <div class="section-title"><span>Portefeuille fictif</span><button class="secondary" id="reset">Réinitialiser</button></div>
+  <div class="card" id="portfolio"><span class="muted">Aucune position simulée.</span></div>
+  <div class="footer">Les données peuvent être retardées, incomplètes ou indisponibles. Les règles sont de simples filtres, pas des conseils financiers. Version prototype.</div>
+</main>
+<script>
+const KEY="cart3r_crypto_ai_v1";
+const defaults={cash:1000,positions:{},rules:{minChange:2,maxChange:10,minVolume:1000000,takeProfit:8,stopLoss:5}};
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||defaults;
+let market=[];
+const euro=n=>Number(n||0).toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
+const pct=n=>(Number(n)>=0?"+":"")+Number(n||0).toFixed(2)+"%";
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderPortfolio()}
+function loadRules(){for(const k of Object.keys(state.rules))document.getElementById(k).value=state.rules[k]}
+function readRules(){for(const k of Object.keys(state.rules))state.rules[k]=Number(document.getElementById(k).value)}
+function renderPortfolio(){
+  let value=0,html="";
+  for(const [id,p] of Object.entries(state.positions)){
+    const c=market.find(x=>x.id===id), price=c?.current_price??p.buyPrice, v=p.qty*price, pnl=v-p.invested;value+=v;
+    html+=`<div class="coin"><div><div class="coin-name">${p.name} <span class="pill">${p.symbol}</span></div><div class="coin-sub">Entrée : ${euro(p.buyPrice)} • Valeur : ${euro(v)}</div><div class="${pnl>=0?'positive':'negative'}" style="font-size:12px;margin-top:4px">Résultat simulé : ${pnl>=0?'+':''}${euro(pnl)}</div></div><button class="secondary" onclick="sell('${id}')">Vendre fictivement</button></div>`;
+  }
+  document.getElementById("cash").textContent=euro(state.cash);
+  document.getElementById("total").textContent=euro(state.cash+value);
+  document.getElementById("positions").textContent=Object.keys(state.positions).length;
+  document.getElementById("portfolio").innerHTML=html||'<span class="muted">Aucune position simulée.</span>';
+}
+function renderCoins(){
+  document.getElementById("coins").innerHTML=market.slice(0,15).map(c=>`<div class="coin"><div><div class="coin-name">${c.name} <span class="pill">${c.symbol.toUpperCase()}</span></div><div class="coin-sub">${euro(c.current_price)} • Volume ${euro(c.total_volume)}</div></div><div class="${c.price_change_percentage_24h>=0?'positive':'negative'}">${pct(c.price_change_percentage_24h)}</div></div>`).join("");
+  const r=state.rules;
+  const picks=market.filter(c=>Number(c.price_change_percentage_24h)>=r.minChange&&Number(c.price_change_percentage_24h)<=r.maxChange&&Number(c.total_volume)>=r.minVolume).slice(0,5);
+  document.getElementById("suggestions").innerHTML=picks.length?picks.map(c=>`<div class="coin"><div><div class="coin-name">${c.name} (${c.symbol.toUpperCase()})</div><div class="coin-sub">Variation 24 h : ${pct(c.price_change_percentage_24h)}</div></div><div style="text-align:right"><span class="pill">À étudier</span><div style="margin-top:8px"><button class="secondary" onclick="buy('${c.id}')">Simuler achat</button></div></div></div>`).join(""):"Aucune monnaie ne correspond actuellement aux règles.";
+}
+async function refresh(){
+  const btn=document.getElementById("refresh");btn.disabled=true;document.getElementById("marketStatus").textContent="Chargement…";
+  try{
+    const url="https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=volume_desc&per_page=30&page=1&sparkline=false&price_change_percentage=24h";
+    const res=await fetch(url);if(!res.ok)throw new Error("Service temporairement indisponible ("+res.status+")");
+    market=await res.json();renderCoins();document.getElementById("updated").textContent="Mis à jour : "+new Date().toLocaleTimeString("fr-FR");document.getElementById("marketStatus").textContent="Connecté";renderPortfolio();
+    checkExitRules();
+  }catch(e){document.getElementById("marketStatus").textContent="Indisponible";document.getElementById("coins").textContent=e.message+" — réessaie plus tard."}
+  finally{btn.disabled=false}
+}
+function checkExitRules(){
+  for(const [id,p] of Object.entries(state.positions)){
+    const c=market.find(x=>x.id===id);if(!c)continue;
+    const change=(c.current_price-p.buyPrice)/p.buyPrice*100;
+    if(change>=state.rules.takeProfit||change<=-state.rules.stopLoss){
+      alert("Règle de sortie atteinte pour "+p.name+" ("+pct(change)+"). Vérifie les données puis décide si tu veux clôturer la simulation.");
+    }
+  }
+}
+function buy(id){
+  const c=market.find(x=>x.id===id);if(!c)return;
+  if(state.positions[id])return alert("Cette monnaie est déjà dans ton portefeuille fictif.");
+  const amount=Math.min(50,state.cash);
+  if(amount<=0)return alert("Solde fictif insuffisant.");
+  if(!confirm("Confirmer un achat FICTIF de "+euro(amount)+" en "+c.name+" ? Aucun argent réel ne sera utilisé."))return;
+  state.cash-=amount;state.positions[id]={name:c.name,symbol:c.symbol.toUpperCase(),buyPrice:c.current_price,qty:amount/c.current_price,invested:amount};save();
+}
+function sell(id){
+  const p=state.positions[id],c=market.find(x=>x.id===id);if(!p)return;
+  const price=c?.current_price??p.buyPrice;
+  if(!confirm("Confirmer la vente FICTIVE de "+p.name+" ?"))return;
+  state.cash+=p.qty*price;delete state.positions[id];save();
+}
+document.getElementById("saveRules").onclick=()=>{readRules();save();document.getElementById("rulesSaved").textContent="Règles enregistrées sur cet appareil.";if(market.length)renderCoins()};
+document.getElementById("refresh").onclick=refresh;
+document.getElementById("reset").onclick=()=>{if(confirm("Effacer le portefeuille fictif et revenir à 1 000 € ?")){state={...defaults,positions:{},rules:{...defaults.rules}};save();loadRules()}};
+loadRules();renderPortfolio();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+</script>
+</body></html>

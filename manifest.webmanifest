@@ -1,0 +1,9 @@
+{
+  "name": "CART3R CRYPTO AI",
+  "short_name": "CART3R AI",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#090b10",
+  "theme_color": "#090b10",
+  "icons": []
+}
